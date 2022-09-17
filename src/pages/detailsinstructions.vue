@@ -17,7 +17,8 @@
             to="/"
             flat
             dense
-            icon="favorite"
+            icon="delete"
+            @click="DeleteRecipe()"
             aria-label="Back"
             class="bg-white"
             color="black"
@@ -246,6 +247,9 @@ export default defineComponent({
     this.detail()
    },
   methods:{
+    DeleteRecipe(){
+      db.collection('Recipes').doc({id: this.$route.params.id.replace(":","")}).delete()
+    },
     detail(){
       db.collection('Ingredients').get().then(Recipes =>{
         this.Ingredients = Recipes.filter(recipe => recipe.id ==  parseInt(this.$route.params.id.replace(":","")));

@@ -197,12 +197,20 @@
         :name="4"
         prefix="4"
         title="Finish"
+
       >
         <q-img style="width:286.28px; height: 364.88px" src="../assets/quasar-logo-vertical.svg"/>
       </q-step>
+      <q-step
+        :name="5"
+        prefix="5"
+        title="Home"
+
+      >
+      </q-step>
       <template v-slot:navigation>
         <q-stepper-navigation>
-          <q-btn @click="$refs.stepper.next(), AddRecipe()" color="secondary" :label="step === 4 ? 'Finish' : 'Continue'" />
+          <q-btn @click="$refs.stepper.next(), AddRecipe(step)" color="secondary" :label="step === 4 ? 'Finish' : 'Continue'" />
           <q-btn v-if="step > 1" flat color="secondary" @click="$refs.stepper.previous()" label="Back" class="q-ml-sm" />
         </q-stepper-navigation>
       </template>
@@ -237,8 +245,8 @@ export default defineComponent({
 
 
   methods:{
-    async AddRecipe(){
-      var numberRecipes
+    async AddRecipe(step){
+      if (step === 4){var numberRecipes
       await db.collection('Recipes').get().then(len =>{
         numberRecipes = len.length
       })
@@ -271,6 +279,9 @@ export default defineComponent({
         })
       })
       }
+    }
+    if(step===5)       this.$router.push("/")
+
     },
     async AddInstruction(name,value){
       var numberRecipes
