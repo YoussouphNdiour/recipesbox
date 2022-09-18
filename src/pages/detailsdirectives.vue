@@ -28,7 +28,29 @@
       <q-img class="img" style="width: 100%; max-height: 516px; position: absolute; top:10px; z-index: -1; " src="https://images.unsplash.com/photo-1543339308-43e59d6b73a6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwcm9maWxlLXBhZ2V8MjcwfHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=500&q=60"     alt=""/>
       <div style="border-radius: 45px; width:100%; height: 647px; position: absolute; top:280px; " class=" rounded-borders bg-white q-pa-md  q-gutter-xs">
         <div class="row">
-          <div class="col" style="height: 47px; font-size: 20px; font-weight: 700; line-height: 26px; font-family: 'EB Garamond'; color: rgb(0, 0, 0);">Easy homemade humgerr Beef </div>
+          <div class="col" style="height: 47px; font-size: 20px; font-weight: 700; line-height: 26px; font-family: 'EB Garamond'; color: rgb(0, 0, 0);">{{Recipe.title}}
+            <q-icon @click="edit = true" name="edit" size="16px" color="#98A1A7" />
+            <q-dialog v-model="edit" >
+              <q-card class="bg-secondary text-white" style="width: 300px">
+                  <q-card-section>
+                    <div class="text-h6">Modificated Title</div>
+                  </q-card-section>
+                  <q-card-section>
+                    <q-input
+                        v-model="valuetitle"
+                        rounded
+                        outlined
+                        label="Title"
+                        class="q-pa-md row"
+                        bg-color="grey-3"
+                        />
+                  </q-card-section>
+                  <q-card-actions align="right" class="bg-white text-secondary">
+                    <q-btn flat @click="EditTilte(valuetitle)" label="Edit" v-close-popup />
+                  </q-card-actions>
+              </q-card>
+            </q-dialog>
+          </div>
           <q-space/>
           <q-icon class="col-2" name="schedule" size="26px" color="#98A1A7" style="top:-18px;">
             <div class="col q-pt-md" style="height: 47px; font-size: 16px; font-weight: 700; line-height: 26px; font-family: 'EB Garamond'; color:rgb(152, 161, 167);">15mn </div>
@@ -219,10 +241,13 @@ export default defineComponent({
     return {
       id:ref(''),
       Ingredients: [],
+      Recipe:ref(''),
+      edit: false,
       idRecipe: parseInt(this.$route.params.id.replace(":","")),
       ref: ref(''),
       search: ref(""),
       addvaluename: ref(""),
+      valuetitle: ref(""),
       addvaluetime: ref(""),
       lorem: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
       step: ref(1),
@@ -245,8 +270,26 @@ export default defineComponent({
   // },
   mounted(){
     this.detail()
+    this.getTitle()
    },
   methods:{
+    async getTitle(){
+      await db.collection('Recipes').get().then(Recipes =>{
+        this.Recipe = Recipes.filter(recipe => recipe.id ==  parseInt(this.$route.params.id.replace(":","")))[0];
+      })
+    },
+    async EditTilte(name){
+      await db.collection('Recipes')
+      .doc({ id:parseInt(this.$route.params.id.replace(":",""))})
+      .set({
+      title: name,
+      author: "john Doe",
+      id: parseInt(this.$route.params.id.replace(":","")),
+      src: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?crop=entropy&cs=tinysrgb&fm=jpg&ixid=Mnw3MjAxN3wwfDF8c2VhcmNofDF8fGZvb2R8ZW58MHwwfHx8MTY2MjA0Njc0OQ&ixlib=rb-1.2.1&q=80&q=85&fmt=jpg&crop=entropy&cs=tinysrgb&w=450",
+      src_arrow: "https://cdn0.iconfinder.com/data/icons/huge-black-icons/512/Forward.png"
+      })
+      this.getTitle()
+    },
     detail(){
       db.collection('Directives').get().then(Recipes =>{
         this.Ingredients = Recipes.filter(recipe => recipe.id ==  parseInt(this.$route.params.id.replace(":","")));

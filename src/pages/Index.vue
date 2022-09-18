@@ -25,22 +25,27 @@
           style="height: 56.43px; width:75px; border-radius: 15px;"
         />
       </q-toolbar>
-      <q-input
-        v-model="search"
-        rounded
-        outlined
-        label="Search"
-        class="q-pa-md"
-        bg-color="grey-3"
-      >
-        <template v-slot:prepend>
-          <q-icon name="search" />
-        </template>
-      </q-input>
-      <div class=" q-px-md q-gutter-xl justify-center row">
-        <q-btn rounded color="secondary" text-color="black"  label="BreakFast" />
-        <q-btn rounded color="white" text-color="black" label="Lunch" />
-        <q-btn rounded color="white" text-color="black" label="Diner" />
+      <div class="row ">
+        <div class="col-12 col-sm-6 q-pa-md ">
+          <q-input
+          v-model="search"
+          rounded
+          outlined
+          label="Search"
+          bg-color="grey-3"
+        >
+          <template v-slot:prepend>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+        </div>
+        <div class="col-12 col-sm-6 q-pa-md ">
+          <div class="q-gutter-md justify-center row">
+          <q-btn rounded color="secondary" text-color="black"  label="BreakFast" />
+          <q-btn rounded color="white" text-color="black" label="Lunch" />
+          <q-btn rounded color="white" text-color="black" label="Diner" />
+        </div>
+      </div>
       </div>
       <div class="row q-px-md q-pt-xl q-pb-md">
         <div style="font-size: 24px; font-weight: 700; line-height: 100%; color: rgb(0, 0, 0);  font-family: 'EB Garamond';" class="col-10 ">Popular Recipe</div> <q-space/>
@@ -65,7 +70,7 @@
               <div class=" text-subtitle1 text-center" >
               {{items[0].name}}
               </div>
-            </div>>
+            </div>
             <div style=" border-radius: 20px; height:118px;" class="rounded-borders bg-white col-4  q-pa-xs ">
               <q-img style=" border-radius: 20px; height:96.68px;"  :src="items[1].src" /> <br>
               <div class=" text-subtitle1 text-center" >
@@ -108,26 +113,35 @@
       <div style="font-size: 24px; font-weight: 700; line-height: 100%; color: rgb(0, 0, 0);  font-family: 'EB Garamond';" class="col-10">Editor's Recipe</div> <q-space/>
       <div style="font-size: 16px; font-weight: 600; line-height: 100%; color: rgba(100.19, 195.50, 189.78, 1);" class="col-2 q-pt-sm">View All</div>
     </div>
-    <div class="items-start q-gutter-md q-pa-md ">
-      <q-card v-for="(item, index) in list" :key="index" dark bordered class=" my-card row  " style=" border-radius: 20px; height:90px; background:white;">
-        <div class="col-4 q-pl-xs q-pt-xs">
+    <div class="items-center q-gutter-md q-pa-md flex">
+      <q-card v-for="(item, index) in list" :key="index" dark bordered class=" my-card row  " style=" border-radius: 20px; height:90px; max-width:300px; background:white;">
+        <div class="col-5 q-pl-xs q-pt-xs">
           <q-img style="width: 106.98px; height: 80.07px;  border-radius: 15px;" rounded class="rounded-borders" :src="item.src" />
         </div>
         <q-separator vertical dark inset />
-
-        <div class="col-6 q-py-xs  ">
+        <div class="col-6 q-py-xs q-gutter-sm">
           <div class="row">
             <router-link :to="'/detailsinstructions/:'+ item.id">
               <div style="height: 47px; font-size: 20px; font-weight: 700; line-height: 26px; font-family: 'EB Garamond'; color: rgb(0, 0, 0);">{{item.title}} </div>
             </router-link>
           </div>
-          <div class="row ">
+          <div class="row q-gutter-xs ">
             <img style="width: 18.42px; height: 18px; border-radius: 30px;" :src="item.src"/>
-            <div style="width: 83.91px; font-size: 16px; font-weight: 600; line-height: 21px; font-family: 'EB Garamond'; color: rgba(152, 161, 167, 1);">{{item.author}}</div>
+            <div class="col" style="width: 100%; font-size: 16px; font-weight: 600; line-height: 21px; font-family: 'EB Garamond'; color: rgba(152, 161, 167, 1);">{{item.author}}</div>
           </div>
         </div>
-        <div class="col q-pt-md">
-          <img style="  width: 30.70px; height: 30px; border-radius: 8px;" :src="item.src_arrow"/>
+        <div class="col q-pt-md flex">
+          <img style="  width: 20.70px; height: 20px; border-radius: 8px;" :src="item.src_arrow"/>
+          <q-space/>
+          <q-btn
+            flat
+            dense
+            icon="delete"
+            class="q-pb-md"
+            @click="DeleteRecipe(item.id)"
+            color="red"
+            style="height: 30.70px; width:30px; border-radius: 15px;"
+          />
         </div>
       </q-card>
     </div>
@@ -204,25 +218,32 @@ export default defineComponent({
     ),
 
    },
+
    mounted(){
     this.lista()
    },
    methods:{
+    async DeleteRecipe(id){
+      await db.collection('Recipes').doc({id: id}).delete()
+      await db.collection('Recipes').get().then(len =>{
+        this.list = len
+      })
+    },
     lista(){
       db.collection('Recipes').get().then(len =>{
-      if(len.length > 2){
-          this.list = len
-      }
-      else{
+      if(len.length == 0 ){
         this.list = this.listRecipes
         this.addData()
+
+      }
+      else{
+        this.list = len
       }
       })
     },
      addData(){
        db.collection('Recipes').get().then(len =>{
         if( len.length == 0 ) {
-          console.log("you", len);
           this.listRecipes.forEach(el=>{
             db.collection('Recipes').add({
               id: el.id,
