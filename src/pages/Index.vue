@@ -114,7 +114,7 @@
       <div style="font-size: 16px; font-weight: 600; line-height: 100%; color: rgba(100.19, 195.50, 189.78, 1);" class="col-2 q-pt-sm">View All</div>
     </div>
     <div class="items-center q-gutter-md q-pa-md flex">
-      <q-card v-for="(item, index) in list" :key="index" dark bordered class=" my-card row  " style=" border-radius: 20px; height:90px; max-width:300px; background:white;">
+      <q-card v-for="(item, index) in list" :key="index" dark bordered class=" my-card row  " style=" border-radius: 20px; height:90px; width:300px; background:white;">
         <div class="col-5 q-pl-xs q-pt-xs">
           <q-img style="width: 106.98px; height: 80.07px;  border-radius: 15px;" rounded class="rounded-borders" :src="item.src" />
         </div>
